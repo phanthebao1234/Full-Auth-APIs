@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
-
+from django.utils import timezone 
 
 class UserAccountManager(BaseUserManager):
     def create_user(self, email, password=None, **kwargs):
@@ -37,6 +37,9 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
         max_length=255,
         unique=True,
     )
+    date_of_birth = models.DateField(null=True, blank=True, default=timezone.now) 
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True) 
+    date_joined = models.DateTimeField(default=timezone.now) 
 
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
@@ -49,3 +52,8 @@ class UserAccount(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+    def has_perm(self, perm, obj=None): 
+        return self.is_superuser 
+    
+    def has_module_perms(self, app_label): 
+        return self.is_superuser
